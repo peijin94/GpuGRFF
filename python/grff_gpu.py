@@ -56,22 +56,26 @@ def get_mw(Lparms, Rparms, Parms, T_arr, DEM_arr, DDM_arr, RL):
     return int(status.get()[0])
 
 
-def get_mw_slice(Lparms_M, Rparms_M, Parms_M, T_arr, DEM_arr_M, DDM_arr_M, RL_M):
+def get_mw_slice(Lparms_M, Rparms_M, Parms_M, T_arr, DEM_arr_M, DDM_arr_M, RL_M, tile_pixels=4096, heap_bytes=None):
     """
     GPU GET_MW_SLICE (multi-pixel), matching GRFF array layout (Fortran-order).
 
     One CUDA block per pixel, one thread per block.
     """
+    if heap_bytes is not None:
+        _ensure_heap(heap_bytes)
     mod = _get_module()
     kernel = mod.get_function("get_mw_slice_kernel")
     Npix = int(Lparms_M[0].get())
     status = cp.zeros((Npix,), dtype=cp.int32)
 
     block = 128
-    grid = (int((Npix + block - 1) / block),)
-    kernel(
-        grid=grid,
-        block=(block,),
-        args=(Lparms_M, Rparms_M, Parms_M, T_arr, DEM_arr_M, DDM_arr_M, RL_M, status),
-    )
+    for pix_offset in range(0, Npix, tile_pixels):
+        pix_count = min(tile_pixels, Npix - pix_offset)
+        grid = (int((pix_count + block - 1) / block),)
+        kernel(
+            grid=grid,
+            block=(block,),
+            args=(Lparms_M, Rparms_M, Parms_M, T_arr, DEM_arr_M, DDM_arr_M, RL_M, status, pix_offset, pix_count),
+        )
     return status.get()

@@ -489,11 +489,13 @@ extern "C" __global__ void get_mw_slice_kernel(const int *Lparms_M,
                                                const double *DEM_arr_M,
                                                const double *DDM_arr_M,
                                                double *RL_M,
-                                               int *status)
+                                               int *status,
+                                               int pix_offset,
+                                               int pix_count)
 {
-    const int pix = blockIdx.x * blockDim.x + threadIdx.x;
-    const int Npix = Lparms_M ? Lparms_M[0] : 0;
-    if (pix >= Npix) return;
+    const int local = blockIdx.x * blockDim.x + threadIdx.x;
+    if (local >= pix_count) return;
+    const int pix = pix_offset + local;
 
     const int *Lparms = Lparms_M + 1;
     const int Nz = Lparms[0];
