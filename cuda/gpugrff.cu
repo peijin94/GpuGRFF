@@ -491,23 +491,21 @@ extern "C" __global__ void get_mw_slice_kernel(const int *Lparms_M,
                                                double *RL_M,
                                                int *status)
 {
-    const int pix = blockIdx.x;
+    const int pix = blockIdx.x * blockDim.x + threadIdx.x;
     const int Npix = Lparms_M ? Lparms_M[0] : 0;
     if (pix >= Npix) return;
 
-    if (threadIdx.x == 0) {
-        const int *Lparms = Lparms_M + 1;
-        const int Nz = Lparms[0];
-        const int Nf = Lparms[1];
-        const int NT = Lparms[2];
+    const int *Lparms = Lparms_M + 1;
+    const int Nz = Lparms[0];
+    const int Nf = Lparms[1];
+    const int NT = Lparms[2];
 
-        const double *Rparms = Rparms_M + pix * RpSize;
-        const double *Parms = Parms_M + pix * Nz * InSize;
-        const double *DEM_arr = DEM_arr_M + pix * Nz * NT;
-        const double *DDM_arr = DDM_arr_M + pix * Nz * NT;
-        double *RL = RL_M + pix * Nf * OutSize;
+    const double *Rparms = Rparms_M + pix * RpSize;
+    const double *Parms = Parms_M + pix * Nz * InSize;
+    const double *DEM_arr = DEM_arr_M + pix * Nz * NT;
+    const double *DDM_arr = DDM_arr_M + pix * Nz * NT;
+    double *RL = RL_M + pix * Nf * OutSize;
 
-        int res = MW_Transfer(Lparms, Rparms, Parms, T_arr, DEM_arr, DDM_arr, RL);
-        if (status) status[pix] = res;
-    }
+    int res = MW_Transfer(Lparms, Rparms, Parms, T_arr, DEM_arr, DDM_arr, RL);
+    if (status) status[pix] = res;
 }

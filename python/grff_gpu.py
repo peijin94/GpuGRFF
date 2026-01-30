@@ -67,9 +67,11 @@ def get_mw_slice(Lparms_M, Rparms_M, Parms_M, T_arr, DEM_arr_M, DDM_arr_M, RL_M)
     Npix = int(Lparms_M[0].get())
     status = cp.zeros((Npix,), dtype=cp.int32)
 
+    block = 128
+    grid = (int((Npix + block - 1) / block),)
     kernel(
-        grid=(Npix,),
-        block=(1,),
+        grid=grid,
+        block=(block,),
         args=(Lparms_M, Rparms_M, Parms_M, T_arr, DEM_arr_M, DDM_arr_M, RL_M, status),
     )
     return status.get()
