@@ -11,7 +11,6 @@ requires-python = ">=3.9"
 license = {text = "MIT"}
 authors = [{name = "Peijin Zhang", email = "pz47@njit.edu"}]
 urls = {homepage = "https://pjzhang.cc"}
-dependencies = ["cupy"]
 
 [tool.setuptools]
 packages = ["fastGRFF"]
