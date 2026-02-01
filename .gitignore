@@ -1,5 +1,6 @@
 # Python
 __pycache__/
+python/__pycache__/
 *.py[cod]
 *$py.class
 
@@ -23,3 +24,36 @@ dist/
 
 # Logs
 *.log
+
+
+# Byte-code files
+*.pyc
+__pycache__/
+
+# Environments
+.venv/
+venv/
+env/
+# other environment names:
+# .env
+
+# Editor/IDE-specific files
+.idea/          # For PyCharm/IntelliJ
+.vscode/        # For VS Code
+
+# Build artifacts and distributions
+dist/
+build/
+*.egg-info/
+
+# Logs and databases
+*.log
+*.sqlite
+db.sqlite3      # Common Django database file
+
+# OS-specific files
+.DS_Store       # macOS
+Thumbs.db       # Windows
+
+# Jupyter Notebook files
+.ipynb_checkpoints/
